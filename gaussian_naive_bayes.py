@@ -1,0 +1,75 @@
+import numpy as np
+from sklearn.metrics import f1_score,recall_score,precision_score,accuracy_score
+
+class GaussianNB():
+    
+    def fit(self, X, y):
+        """
+        Fit the model to the training data by calculating the mean and variance
+        of each feature for each class.
+        """
+        self.X, self.y = X, y
+        self.classes = np.unique(y)
+        self.parameters = []
+        
+        for c in self.classes:
+            # Extract all rows for a specific class
+            X_c = X[y == c]
+            # Store mean and variance for each feature
+            self.parameters.append({
+                "mean": X_c.mean(axis=0),
+                "var": X_c.var(axis=0)
+            })
+
+    def _calculate_log_likelihood(self, mean, var, x):
+        """
+        Compute the log of the Gaussian likelihood for a given feature value.
+        Handles numerical stability by working in the log space.
+        """
+        eps = 1e-4  # Small constant to prevent division by zero
+        var = np.maximum(var, eps)  # Ensure variance is non-zero
+        coeff = -0.5 * np.log(2.0 * np.pi * var)
+        exponent = -0.5 * ((x - mean) ** 2) / var
+        return coeff + exponent  # Return log-likelihood
+
+    def _calculate_log_prior(self, c):
+        """
+        Compute the log prior probability for class c.
+        """
+        return np.log(np.mean(self.y == c))
+
+    
+    def _classify(self, X):
+        """
+        Classify multiple samples by computing the posterior probabilities for each class.
+        """
+        log_priors = np.array([self._calculate_log_prior(c) for c in self.classes])
+        log_likelihoods = np.zeros((X.shape[0], len(self.classes)))
+
+        for i, params in enumerate(self.parameters):
+            log_likelihoods[:, i] = np.sum(self._calculate_log_likelihood(params["mean"], params["var"], X), axis=1)
+
+        log_posteriors = log_priors + log_likelihoods
+        return self.classes[np.argmax(log_posteriors, axis=1)]
+
+    def predict(self, X):
+        """
+        Predict the class labels for the given samples.
+        """
+        return self._classify(X)
+    
+    def accuracy(self, y_true, y_pred):
+        """
+        Compute the accuracy of the model.
+        """
+        unique_classes = np.unique(y_true)  # Get unique class labels
+        avg_mode = 'weighted' if len(unique_classes) > 2 else None
+        f1 = f1_score(y_true, y_pred,average=avg_mode)
+        recall = recall_score(y_true, y_pred,average=avg_mode)
+        precision = precision_score(y_true, y_pred,average=avg_mode)
+        acc = accuracy_score(y_true,y_pred) *100
+        print("Custom Accuracy")
+        print(f"Accuracy: {acc:.2f}%")
+        print(f"F1 score: {f1}")
+        print(f"Recall: {recall}")
+        print(f"Precision: {precision}")
