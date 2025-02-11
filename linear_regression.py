@@ -9,6 +9,7 @@ class LinRegression:
         self.alpha = alpha
 
     def fit(self, x_train, y_train):
+        x_train = np.column_stack((np.ones(len(x_train)), x_train))
         self.weights = np.zeros(x_train.shape[1])
         for i in range(self.num_iters):
             m = len(x_train)
@@ -18,6 +19,7 @@ class LinRegression:
             self.weights -= self.lr * grad
 
     def predict(self, x_test):
+        x_test = np.column_stack((np.ones(len(x_test)), x_test))
         return np.dot(x_test, self.weights)
     
     def accuracy(self,actual,predicted):

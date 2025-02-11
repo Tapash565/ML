@@ -19,6 +19,7 @@ class LogRegression():
         return loss
     
     def fit(self, x_train,y_train):
+        x_train = np.column_stack((np.ones(len(x_train)), x_train))
         self.weights = np.ones(x_train.shape[1])
         for i in range(self.num_iters):
             m = len(x_train)
@@ -29,6 +30,7 @@ class LogRegression():
             self.weights -= self.lr * grad
     
     def predict(self, x_test):
+        x_test = np.column_stack((np.ones(len(x_test)), x_test))
         pred = self.sigmoid(np.dot(x_test, self.weights))
         return (pred >= 0.5).astype(int)
     
