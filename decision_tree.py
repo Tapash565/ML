@@ -14,11 +14,12 @@ class Node:
         return self.value is not None
 
 class DecisionTree():
-    def __init__(self,min_samples_split=2, max_depth=100, n_features=None):
+    def __init__(self,min_samples_split=2, max_depth=100, n_features=None,criterion="entropy"):
         self.min_samples_split = min_samples_split
         self.max_depth = max_depth
         self.n_features = n_features
         self.root = None
+        self.criterion = criterion
 
     def fit(self,X,y):
         self.n_features = X.shape[1] if not self.n_features else min(X.shape[1],self.n_features)
@@ -61,8 +62,10 @@ class DecisionTree():
         return split_idx, split_threshold
     
     def _information_gain(self, y,X_column,threshold):
-        # parent entropy
-        parent_entropy = self._entropy(y)
+        if self.criterion == "entropy":
+            parent_impurity = self._entropy(y)
+        else:
+            parent_impurity = self._gini(y)
         # create children
         left_idx,right_idx = self._split(X_column,threshold)
 
@@ -72,10 +75,13 @@ class DecisionTree():
 
         n = len(y)
         n_l,n_r = len(left_idx),len(right_idx)
-        e_l,e_r = self._entropy(y[left_idx]),self._entropy(y[right_idx])
-        child_entropy = (n_l/n)*e_l + (n_r/n)*e_r
+        if self.criterion == "entropy":
+            e_l,e_r = self._entropy(y[left_idx]),self._entropy(y[right_idx])
+        else:
+            e_l,e_r = self._gini(y[left_idx]),self._gini(y[right_idx])
+        child_impurity = (n_l/n)*e_l + (n_r/n)*e_r
         # Calculate the IG
-        information_gain = parent_entropy - child_entropy
+        information_gain = parent_impurity - child_impurity
         return information_gain
     
     def _split(self,X_column,split_thresh):
@@ -87,6 +93,11 @@ class DecisionTree():
         hist = np.bincount(y)
         ps = hist/len(y)
         return -np.sum([p*np.log(p)for p in ps if p>0])
+    
+    def _gini(self,y):
+        hist = np.bincount(y)
+        ps = hist/len(y)
+        return 1 - np.sum([p ** 2 for p in ps])
 
     def _most_common_label(self, y):
         if len(y) == 0:  # Prevent index error
