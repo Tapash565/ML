@@ -89,6 +89,8 @@ class DecisionTree():
         return -np.sum([p*np.log(p)for p in ps if p>0])
 
     def _most_common_label(self, y):
+        if len(y) == 0:  # Prevent index error
+            return None
         counter = Counter(y)
         value = counter.most_common(1)[0][0]
         return value
