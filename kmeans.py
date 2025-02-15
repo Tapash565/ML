@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.metrics import accuracy_score,recall_score,precision_score,f1_score
+from sklearn.metrics import silhouette_score,calinski_harabasz_score,davies_bouldin_score
 
 def euclidean_distance(x1,x2):
     return np.sqrt(np.sum((x1-x2)**2))
@@ -23,7 +23,7 @@ class KMeans:
 
         # initialize
         random_sample_idxs = np.random.choice(self.n_samples, self.K, replace=False)
-        self.centroids = [self.X[idx] for idx in random_sample_idxs]
+        self.centroids = np.array([self.X[idx] for idx in random_sample_idxs])
 
         # optimize clusters
         for _ in range(self.max_iters):
@@ -94,18 +94,14 @@ class KMeans:
             ax.scatter(*point, marker="x", color="black", linewidth=2)
 
         plt.show()
-    
+
     def accuracy(self, y_true, y_pred):
         """
         Compute the accuracy of the model.
         """
-        unique_classes = np.unique(y_true)  # Get unique class labels
-        avg_mode = 'weighted' if len(unique_classes) > 2 else None
-        print("Custom Accuracy")
-        print(f"Accuracy: {accuracy_score(y_true,y_pred) *100:.2f}%")
-        print(f"F1 score: {f1_score(y_true, y_pred,average=avg_mode)}")
-        print(f"Recall: {recall_score(y_true, y_pred,average=avg_mode)}")
-        print(f"Precision: {precision_score(y_true, y_pred,average=avg_mode)}")
+        print(f"Silhouette: {silhouette_score(self.X,y_pred)}")
+        print(f"Davies Bouldin: {davies_bouldin_score(self.X,y_pred)}")
+        print(f"Calinski Harabasz: {calinski_harabasz_score(self.X,y_pred)}")
 
 
 # Testing
@@ -121,7 +117,7 @@ if __name__ == "__main__":
     clusters = len(np.unique(y))
     print(clusters)
 
-    k = KMeans(K=clusters, max_iters=150, plot_steps=True)
+    k = KMeans(K=clusters, max_iters=150)
     y_pred = k.predict(X)
     
     k.plot()
