@@ -61,14 +61,22 @@ class GaussianNB():
         """
         unique_classes = np.unique(y_true)  # Get unique class labels
         avg_mode = 'weighted' if len(unique_classes) > 2 else None
-        f1 = f1_score(y_true, y_pred,average=avg_mode)
-        recall = recall_score(y_true, y_pred,average=avg_mode)
-        precision = precision_score(y_true, y_pred,average=avg_mode)
-        acc = accuracy_score(y_true,y_pred) *100
         print("Custom Accuracy")
-        print(f"Accuracy: {acc:.2f}%")
-        print(f"F1 score: {f1}")
-        print(f"Recall: {recall}")
-        print(f"Precision: {precision}")
+        print(f"Accuracy: {accuracy_score(y_true,y_pred) *100:.2f}%")
+        print(f"F1 score: {f1_score(y_true, y_pred,average=avg_mode)}")
+        print(f"Recall: {recall_score(y_true, y_pred,average=avg_mode)}")
+        print(f"Precision: {precision_score(y_true, y_pred,average=avg_mode)}")
 
-        
+if __name__ == "__main__":
+    from sklearn import datasets
+    from sklearn.model_selection import train_test_split
+
+    data = datasets.load_breast_cancer()
+    X,y = data.data,data.target
+
+    X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.2,random_state=42)
+
+    clf = GaussianNB()
+    clf.fit(X_train,y_train)
+    y_pred = clf.predict(X_test)
+    clf.accuracy(y_test,y_pred)
