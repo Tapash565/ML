@@ -1,7 +1,9 @@
 from decision_tree import DecisionTree
 import numpy as np
 from collections import Counter
-from sklearn.metrics import f1_score,recall_score,precision_score,accuracy_score
+from sklearn.metrics import confusion_matrix,f1_score,recall_score,precision_score,accuracy_score
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 class RandomForest():
     def __init__(self,n_trees=10,max_depth=10,min_samples_split=2,n_features=None):
@@ -40,12 +42,10 @@ class RandomForest():
         """
         unique_classes = np.unique(y_true)  # Get unique class labels
         avg_mode = 'weighted' if len(unique_classes) > 2 else None
-        f1 = f1_score(y_true, y_pred,average=avg_mode)
-        recall = recall_score(y_true, y_pred,average=avg_mode)
-        precision = precision_score(y_true, y_pred,average=avg_mode)
-        acc = accuracy_score(y_true,y_pred) *100
         print("Custom Accuracy")
-        print(f"Accuracy: {acc:.2f}%")
-        print(f"F1 score: {f1}")
-        print(f"Recall: {recall}")
-        print(f"Precision: {precision}")
+        print(f"Accuracy: {accuracy_score(y_true,y_pred) *100:.2f}%")
+        print(f"F1 score: {f1_score(y_true, y_pred,average=avg_mode)}")
+        print(f"Recall: {recall_score(y_true, y_pred,average=avg_mode)}")
+        print(f"Precision: {precision_score(y_true, y_pred,average=avg_mode)}")
+        sns.heatmap(confusion_matrix(y_true,y_pred),annot=True)
+        plt.show()
