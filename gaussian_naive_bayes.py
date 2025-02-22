@@ -1,5 +1,5 @@
-import numpy as np
-from sklearn.metrics import f1_score,recall_score,precision_score,accuracy_score
+import numpy as np, seaborn as sns, matplotlib.pyplot as plt
+from sklearn.metrics import f1_score,recall_score,precision_score,accuracy_score, confusion_matrix
 
 class GaussianNB():
     
@@ -66,6 +66,8 @@ class GaussianNB():
         print(f"F1 score: {f1_score(y_true, y_pred,average=avg_mode)}")
         print(f"Recall: {recall_score(y_true, y_pred,average=avg_mode)}")
         print(f"Precision: {precision_score(y_true, y_pred,average=avg_mode)}")
+        sns.heatmap(confusion_matrix(y_true,y_pred, normalize='true'),annot=True,fmt='.2f')
+        plt.show()
 
 if __name__ == "__main__":
     from sklearn import datasets

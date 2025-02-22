@@ -2,9 +2,10 @@ import numpy as np
 from sklearn.metrics import confusion_matrix,f1_score,recall_score,precision_score,accuracy_score
 import seaborn as sns
 import matplotlib.pyplot as plt
+from sklearn.base import BaseEstimator, ClassifierMixin
 
-class LogRegression():
-    def __init__(self,lr = 0.01, num_iters = 100,lamda = 1,alpha = 0.5):
+class LogRegression(BaseEstimator, ClassifierMixin):
+    def __init__(self,lr = 0.01, num_iters = 100,lamda = 0,alpha = 0):
         self.lr = lr
         self.num_iters = num_iters
         self.weights = None
@@ -28,7 +29,7 @@ class LogRegression():
             z = x_train.dot(self.weights)
             y_pred = self.sigmoid(z)
             diff = y_pred - y_train
-            grad = (1/ m) * np.dot(x_train.T,diff) + (self.lamda/m) * (self.weights * self.alpha + (1 - self.alpha) * np.sign(self.weights))
+            grad = (1/ m) * np.dot(x_train.T,diff) + (self.lamda/m) * (self.alpha * self.weights + (1 - self.alpha) * np.sign(self.weights))
             self.weights -= self.lr * grad
     
     def predict(self, x_test):
@@ -47,5 +48,5 @@ class LogRegression():
         print(f"F1 score: {f1_score(y_true, y_pred,average=avg_mode)}")
         print(f"Recall: {recall_score(y_true, y_pred,average=avg_mode)}")
         print(f"Precision: {precision_score(y_true, y_pred,average=avg_mode)}")
-        sns.heatmap(confusion_matrix(y_true,y_pred),annot=True)
+        sns.heatmap(confusion_matrix(y_true,y_pred, normalize='true'),annot=True,fmt='.2f')
         plt.show()

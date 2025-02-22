@@ -42,5 +42,5 @@ class SVM:
         print(f"F1 score: {f1_score(y_true, y_pred,average=avg_mode)}")
         print(f"Recall: {recall_score(y_true, y_pred,average=avg_mode)}")
         print(f"Precision: {precision_score(y_true, y_pred,average=avg_mode)}")
-        sns.heatmap(confusion_matrix(y_true,y_pred),annot=True)
-        plt.show()    
+        sns.heatmap(confusion_matrix(y_true,y_pred, normalize='true'),annot=True,fmt='.2f')
+        plt.show()
