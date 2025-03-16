@@ -3,8 +3,9 @@ from sklearn.metrics import confusion_matrix,f1_score,recall_score,precision_sco
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.base import BaseEstimator, ClassifierMixin
+from classifiers import classifier
 
-class LogRegression(BaseEstimator, ClassifierMixin):
+class LogisticRegression(classifier, BaseEstimator, ClassifierMixin):
     def __init__(self,lr = 0.01, num_iters = 100,lamda = 0,alpha = 0):
         self.lr = lr
         self.num_iters = num_iters
@@ -36,17 +37,3 @@ class LogRegression(BaseEstimator, ClassifierMixin):
         x_test = np.column_stack((np.ones(len(x_test)), x_test))
         pred = self.sigmoid(np.dot(x_test, self.weights))
         return (pred >= 0.5).astype(int)
-    
-    def accuracy(self, y_true, y_pred):
-        """
-        Compute the accuracy of the model.
-        """
-        unique_classes = np.unique(y_true)  # Get unique class labels
-        avg_mode = 'weighted' if len(unique_classes) > 2 else None
-        print("Custom Accuracy")
-        print(f"Accuracy: {accuracy_score(y_true,y_pred) *100:.2f}%")
-        print(f"F1 score: {f1_score(y_true, y_pred,average=avg_mode)}")
-        print(f"Recall: {recall_score(y_true, y_pred,average=avg_mode)}")
-        print(f"Precision: {precision_score(y_true, y_pred,average=avg_mode)}")
-        sns.heatmap(confusion_matrix(y_true,y_pred, normalize='true'),annot=True,fmt='.2f')
-        plt.show()

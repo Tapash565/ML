@@ -2,8 +2,9 @@ import numpy as np
 from sklearn.metrics import confusion_matrix,f1_score,recall_score,precision_score,accuracy_score
 import seaborn as sns
 import matplotlib.pyplot as plt
+from classifiers import classifier
 
-class KNN():
+class KNN(classifier):
     def __init__(self, k=3):
         self.k = k
 
@@ -23,17 +24,3 @@ class KNN():
             # Append the most common label to predictions
             predictions.append(np.bincount(k_neighbor_labels).argmax())
         return np.array(predictions)
-    
-    def accuracy(self, y_true, y_pred):
-        """
-        Compute the accuracy of the model.
-        """
-        unique_classes = np.unique(y_true)  # Get unique class labels
-        avg_mode = 'weighted' if len(unique_classes) > 2 else None
-        print("Custom Accuracy")
-        print(f"Accuracy: {accuracy_score(y_true,y_pred) *100:.2f}%")
-        print(f"F1 score: {f1_score(y_true, y_pred,average=avg_mode)}")
-        print(f"Recall: {recall_score(y_true, y_pred,average=avg_mode)}")
-        print(f"Precision: {precision_score(y_true, y_pred,average=avg_mode)}")
-        sns.heatmap(confusion_matrix(y_true,y_pred, normalize='true'),annot=True)
-        plt.show()

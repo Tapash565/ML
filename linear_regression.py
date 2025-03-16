@@ -1,6 +1,8 @@
 import numpy as np
 from sklearn.metrics import r2_score,mean_absolute_error,root_mean_squared_error
-class LinearRegression:
+from regression import Regression
+
+class LinearRegression(Regression):
     def __init__(self,learning_rate = 0.01, n_iterations = 100,lamda = 0,alpha = 0):
         self.learning_rate = learning_rate
         self.n_iterations = n_iterations
@@ -21,11 +23,3 @@ class LinearRegression:
     def predict(self, x_test):
         x_test = np.column_stack((np.ones(len(x_test)), x_test))
         return np.dot(x_test, self.weights)
-    
-    def accuracy(self,actual,predicted):
-        r2 = r2_score(actual,predicted)
-        mae = mean_absolute_error(actual,predicted)
-        rmse = root_mean_squared_error(actual,predicted)
-        print(f"R2 score: {r2}")
-        print(f"Mean Absolute Error: {mae}")
-        print(f"Root Mean Square Error: {rmse}")

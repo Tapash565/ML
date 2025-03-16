@@ -4,8 +4,9 @@ from collections import Counter
 from sklearn.metrics import confusion_matrix,f1_score,recall_score,precision_score,accuracy_score
 import seaborn as sns
 import matplotlib.pyplot as plt
+from classifiers import classifier
 
-class RandomForest():
+class RandomForest(classifier):
     def __init__(self,n_trees=10,max_depth=10,min_samples_split=2,n_features=None):
         self.n_trees = n_trees
         self.min_samples_split = min_samples_split
@@ -35,17 +36,3 @@ class RandomForest():
         tree_preds = np.swapaxes(predictions,0,1)
         predictions = np.array([self._most_common_label(pred) for pred in tree_preds])
         return predictions
-    
-    def accuracy(self, y_true, y_pred):
-        """
-        Compute the accuracy of the model.
-        """
-        unique_classes = np.unique(y_true)  # Get unique class labels
-        avg_mode = 'weighted' if len(unique_classes) > 2 else None
-        print("Custom Accuracy")
-        print(f"Accuracy: {accuracy_score(y_true,y_pred) *100:.2f}%")
-        print(f"F1 score: {f1_score(y_true, y_pred,average=avg_mode)}")
-        print(f"Recall: {recall_score(y_true, y_pred,average=avg_mode)}")
-        print(f"Precision: {precision_score(y_true, y_pred,average=avg_mode)}")
-        sns.heatmap(confusion_matrix(y_true,y_pred, normalize='true'),annot=True,fmt='.2f')
-        plt.show()

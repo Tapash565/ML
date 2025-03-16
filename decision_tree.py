@@ -3,6 +3,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.metrics import f1_score,recall_score,precision_score,accuracy_score,confusion_matrix
 from collections import Counter
+from classifiers import classifier
 
 class Node:
     def __init__(self, feature=None, threshold=None, left=None, right=None,*, value=None):
@@ -15,7 +16,7 @@ class Node:
     def is_leaf_node(self):
         return self.value is not None
 
-class DecisionTree:
+class DecisionTree(classifier):
     def __init__(self,min_samples_split=2, max_depth=100, n_features=None,criterion="entropy"):
         self.min_samples_split = min_samples_split
         self.max_depth = max_depth
@@ -120,17 +121,3 @@ class DecisionTree:
         if x[node.feature] <= node.threshold:
             return self._traverse_tree(x,node.left)
         return self._traverse_tree(x,node.right)
-    
-    def accuracy(self, y_true, y_pred):
-        """
-        Compute the accuracy of the model.
-        """
-        unique_classes = np.unique(y_true)  # Get unique class labels
-        avg_mode = 'weighted' if len(unique_classes) > 2 else None
-        print("Custom Accuracy")
-        print(f"Accuracy: {accuracy_score(y_true,y_pred) *100:.2f}%")
-        print(f"F1 score: {f1_score(y_true, y_pred,average=avg_mode)}")
-        print(f"Recall: {recall_score(y_true, y_pred,average=avg_mode)}")
-        print(f"Precision: {precision_score(y_true, y_pred,average=avg_mode)}")
-        sns.heatmap(confusion_matrix(y_true,y_pred, normalize='true'),annot=True,fmt='.2f')
-        plt.show()

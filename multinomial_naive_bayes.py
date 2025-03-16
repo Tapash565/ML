@@ -3,8 +3,9 @@ from sklearn.metrics import confusion_matrix,f1_score,recall_score,precision_sco
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.base import BaseEstimator, ClassifierMixin
+from classifiers import classifier
 
-class MultinomialNB(BaseEstimator, ClassifierMixin):
+class MultinomialNB(classifier, BaseEstimator, ClassifierMixin):
     def fit(self, X, y):
         """
         Fits the Naive Bayes model to the training data.
@@ -53,17 +54,3 @@ class MultinomialNB(BaseEstimator, ClassifierMixin):
                 class_probs.append(prob)
             probs.append(np.array(class_probs) / sum(class_probs))
         return np.array(probs)
-    
-    def accuracy(self, y_true, y_pred):
-        """
-        Compute the accuracy of the model.
-        """
-        unique_classes = np.unique(y_true)  # Get unique class labels
-        avg_mode = 'weighted' if len(unique_classes) > 2 else None
-        print("Custom Accuracy")
-        print(f"Accuracy: {accuracy_score(y_true,y_pred) *100:.2f}%")
-        print(f"F1 score: {f1_score(y_true, y_pred,average=avg_mode)}")
-        print(f"Recall: {recall_score(y_true, y_pred,average=avg_mode)}")
-        print(f"Precision: {precision_score(y_true, y_pred,average=avg_mode)}")
-        sns.heatmap(confusion_matrix(y_true,y_pred, normalize='true'),annot=True,fmt='.2f')
-        plt.show()

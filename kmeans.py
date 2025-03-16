@@ -1,11 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import silhouette_score,calinski_harabasz_score,davies_bouldin_score
+from cluster import cluster
 
 def euclidean_distance(x1,x2):
     return np.sqrt(np.sum((x1-x2)**2))
 
-class KMeans:
+class KMeans(cluster):
     def __init__(self,K=5, max_iters=100, plot_steps=False):
         self.K = K
         self.max_iters = max_iters
@@ -94,15 +95,6 @@ class KMeans:
             ax.scatter(*point, marker="x", color="black", linewidth=2)
 
         plt.show()
-
-    def accuracy(self, y_pred):
-        """
-        Compute the accuracy of the model.
-        """
-        print(f"Silhouette: {silhouette_score(self.X,y_pred)}")
-        print(f"Davies Bouldin: {davies_bouldin_score(self.X,y_pred)}")
-        print(f"Calinski Harabasz: {calinski_harabasz_score(self.X,y_pred)}")
-
 
 # Testing
 if __name__ == "__main__":

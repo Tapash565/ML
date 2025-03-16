@@ -2,11 +2,12 @@ import numpy as np
 from sklearn.metrics import confusion_matrix,f1_score,recall_score,precision_score,accuracy_score
 import seaborn as sns
 import matplotlib.pyplot as plt
+from classifiers import classifier
 
 def unit_step_func(x):
     return np.where(x>0,1,0)
 
-class Perceptron():
+class Perceptron(classifier):
     def __init__(self,lr=0.01,n_iters=1000):
         self.lr = lr
         self.n_iters = n_iters

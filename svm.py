@@ -1,7 +1,9 @@
 import numpy as np,matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix,f1_score,recall_score,precision_score,accuracy_score
 import seaborn as sns
-class SVM:
+from classifiers import classifier
+
+class SVM(classifier):
     def __init__(self,learning_rate=0.001,lambda_param=0.01,n_iters=1000):
         self.lr = learning_rate
         self.lambda_param = lambda_param
@@ -29,18 +31,3 @@ class SVM:
     def predict(self,X):
         approx = np.dot(X,self.weights) - self.bias
         return np.sign(approx)
-
-    def accuracy(self, y_true, y_pred):
-        """
-        Compute the accuracy of the model.
-        """
-        y_true = np.where(y_true == 0,-1,1)
-        unique_classes = np.unique(y_true)  # Get unique class labels
-        avg_mode = 'weighted' if len(unique_classes) > 2 else None
-        print("Custom Accuracy")
-        print(f"Accuracy: {accuracy_score(y_true,y_pred) *100:.2f}%")
-        print(f"F1 score: {f1_score(y_true, y_pred,average=avg_mode)}")
-        print(f"Recall: {recall_score(y_true, y_pred,average=avg_mode)}")
-        print(f"Precision: {precision_score(y_true, y_pred,average=avg_mode)}")
-        sns.heatmap(confusion_matrix(y_true,y_pred, normalize='true'),annot=True,fmt='.2f')
-        plt.show()

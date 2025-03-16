@@ -1,7 +1,8 @@
 import numpy as np, seaborn as sns, matplotlib.pyplot as plt
 from sklearn.metrics import f1_score,recall_score,precision_score,accuracy_score, confusion_matrix
+from classifiers import classifier
 
-class GaussianNB():
+class GaussianNB(classifier):
     
     def fit(self, X, y):
         """
@@ -54,20 +55,6 @@ class GaussianNB():
         Predict the class labels for the given samples.
         """
         return self._classify(X)
-    
-    def accuracy(self, y_true, y_pred):
-        """
-        Compute the accuracy of the model.
-        """
-        unique_classes = np.unique(y_true)  # Get unique class labels
-        avg_mode = 'weighted' if len(unique_classes) > 2 else None
-        print("Custom Accuracy")
-        print(f"Accuracy: {accuracy_score(y_true,y_pred) *100:.2f}%")
-        print(f"F1 score: {f1_score(y_true, y_pred,average=avg_mode)}")
-        print(f"Recall: {recall_score(y_true, y_pred,average=avg_mode)}")
-        print(f"Precision: {precision_score(y_true, y_pred,average=avg_mode)}")
-        sns.heatmap(confusion_matrix(y_true,y_pred, normalize='true'),annot=True,fmt='.2f')
-        plt.show()
 
 if __name__ == "__main__":
     from sklearn import datasets
