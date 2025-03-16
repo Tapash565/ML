@@ -57,7 +57,7 @@ class KMeans:
         return labels
 
     def _create_clusters(self, centroids):
-        # assign samples to the closest centroids
+        """Assign samples to the closest centroids"""
         clusters = [[] for _ in range(self.K)]
         for idx, sample in enumerate(self.X):
             centroid_idx = self._closest_centroid(sample, centroids)
@@ -95,7 +95,7 @@ class KMeans:
 
         plt.show()
 
-    def accuracy(self, y_true, y_pred):
+    def accuracy(self, y_pred):
         """
         Compute the accuracy of the model.
         """
@@ -119,5 +119,5 @@ if __name__ == "__main__":
 
     k = KMeans(K=clusters, max_iters=150)
     y_pred = k.predict(X)
-    
-    k.plot()
+    k.accuracy(y_pred)
+    # k.plot()

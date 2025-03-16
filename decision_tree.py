@@ -15,7 +15,7 @@ class Node:
     def is_leaf_node(self):
         return self.value is not None
 
-class DecisionTree():
+class DecisionTree:
     def __init__(self,min_samples_split=2, max_depth=100, n_features=None,criterion="entropy"):
         self.min_samples_split = min_samples_split
         self.max_depth = max_depth
@@ -31,7 +31,7 @@ class DecisionTree():
         n_samples, n_feats = X.shape
         n_labels = len(np.unique(y))
 
-        #check the stoppig criteria
+        #check the stopping criteria
         if (depth>=self.max_depth or n_labels==1 or n_samples<self.min_samples_split):
             leaf_value = self._most_common_label(y)
             return Node(value=leaf_value)
@@ -64,6 +64,7 @@ class DecisionTree():
         return split_idx, split_threshold
     
     def _information_gain(self, y,X_column,threshold):
+        """Calculate the Information Gain using Gini index or Entropy"""
         if self.criterion == "entropy":
             parent_impurity = self._entropy(y)
         else:
@@ -94,7 +95,7 @@ class DecisionTree():
     def _entropy(self,y):
         hist = np.bincount(y)
         ps = hist/len(y)
-        return -np.sum([p*np.log(p)for p in ps if p>0])
+        return -np.sum([p*np.log2(p + 1e-15)for p in ps if p>0])
     
     def _gini(self,y):
         hist = np.bincount(y)
