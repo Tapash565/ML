@@ -6,9 +6,9 @@ from sklearn.base import BaseEstimator, ClassifierMixin
 from classifiers import classifier
 
 class LogisticRegression(classifier, BaseEstimator, ClassifierMixin):
-    def __init__(self,lr = 0.01, num_iters = 100,lamda = 0,alpha = 0):
+    def __init__(self,lr = 0.01, n_iters = 100,lamda = 0,alpha = 0):
         self.lr = lr
-        self.num_iters = num_iters
+        self.n_iters = n_iters
         self.weights = None
         self.lamda = lamda
         self.alpha = alpha
@@ -22,15 +22,15 @@ class LogisticRegression(classifier, BaseEstimator, ClassifierMixin):
         loss = -1/m * np.sum(y * np.log(predictions) + (1 - y) * np.log(1 - predictions))
         return loss
     
-    def fit(self, x_train,y_train):
-        x_train = np.column_stack((np.ones(len(x_train)), x_train))
-        self.weights = np.ones(x_train.shape[1])
-        for i in range(self.num_iters):
-            m = len(x_train)
-            z = x_train.dot(self.weights)
+    def fit(self, X,y):
+        X = np.column_stack((np.ones(len(X)), X))
+        self.weights = np.ones(X.shape[1])
+        for _ in range(self.n_iters):
+            m = len(X)
+            z = X.dot(self.weights)
             y_pred = self.sigmoid(z)
-            diff = y_pred - y_train
-            grad = (1/ m) * np.dot(x_train.T,diff) + (self.lamda/m) * (self.alpha * self.weights + (1 - self.alpha) * np.sign(self.weights))
+            diff = y_pred - y
+            grad = (1/ m) * np.dot(X.T,diff) + self.alpha * (self.l1_ratio * np.sign(self.weights) + (1 - self.l1_ratio) * self.weights)
             self.weights -= self.lr * grad
     
     def predict(self, x_test):
