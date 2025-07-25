@@ -4,14 +4,16 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import f1_score,recall_score,precision_score,accuracy_score,confusion_matrix
 from collections import Counter
 from classifiers import classifier
+from sklearn.preprocessing import LabelEncoder
 
 class Node:
-    def __init__(self, feature=None, threshold=None, left=None, right=None,*, value=None):
+    def __init__(self, feature=None, threshold=None, left=None, right=None,*, value=None, counts=None):
         self.feature = feature
         self.threshold = threshold
         self.left = left
         self.right = right
         self.value = value
+        self.counts = counts  # Store counts of each class at leaf nodes
     
     def is_leaf_node(self):
         return self.value is not None
@@ -23,8 +25,10 @@ class DecisionTree(classifier):
         self.n_features = n_features
         self.root = None
         self.criterion = criterion
+        self.classes_ = None # Store the classes encountered during fitting
 
     def fit(self,X,y):
+        self.classes_, y = np.unique(y, return_inverse=True) # Store the classes
         self.n_features = X.shape[1] if not self.n_features else min(X.shape[1],self.n_features)
         self.root = self._grow_tree(X,y)
 
@@ -34,8 +38,8 @@ class DecisionTree(classifier):
 
         #check the stopping criteria
         if (depth>=self.max_depth or n_labels==1 or n_samples<self.min_samples_split):
-            leaf_value = self._most_common_label(y)
-            return Node(value=leaf_value)
+            leaf_value, counts = self._most_common_label(y, return_counts=True)
+            return Node(value=leaf_value, counts=counts)
 
         feat_idxs = np.random.choice(n_feats,self.n_features,replace=False)
         #find the best split
@@ -58,10 +62,8 @@ class DecisionTree(classifier):
             for thr in thresholds:
                 # calculate the informatin gain
                 gain = self._information_gain(y,X_column,thr)
-                if gain>best_gain:
-                    best_gain = gain
-                    split_idx = feat_idx
-                    split_threshold = thr
+                if gain > best_gain and gain > 1e-6:
+                    best_gain, split_idx, split_threshold = gain, feat_idx, thr
         return split_idx, split_threshold
     
     def _information_gain(self, y,X_column,threshold):
@@ -94,25 +96,29 @@ class DecisionTree(classifier):
         return left_idxs,right_idxs
 
     def _entropy(self,y):
-        hist = np.bincount(y)
-        ps = hist/len(y)
+        _, counts = np.unique(y,return_counts=True)
+        ps = counts/len(y)
         return -np.sum([p*np.log2(p + 1e-15)for p in ps if p>0])
     
     def _gini(self,y):
-        hist = np.bincount(y)
-        ps = hist/len(y)
+        _, counts = np.unique(y,return_counts=True)
+        ps = counts/len(y)
         return 1 - np.sum([p ** 2 for p in ps])
 
-    def _most_common_label(self, y):
+    def _most_common_label(self, y, return_counts=False):
         if len(y) == 0:  # Prevent index error
             return None
         counter = Counter(y)
         value = counter.most_common(1)[0][0]
-        return value
+        if return_counts:
+            return value, counter
+        else:
+            return value
 
-    
     def predict(self,X):
-        return np.array([self._traverse_tree(x,self.root) for x in X])
+        y_pred_encoded = np.array([self._traverse_tree(x,self.root) for x in X])
+        y_pred = self.classes_[y_pred_encoded]
+        return y_pred
     
     def _traverse_tree(self,x,node):
         if node.is_leaf_node():
@@ -121,3 +127,23 @@ class DecisionTree(classifier):
         if x[node.feature] <= node.threshold:
             return self._traverse_tree(x,node.left)
         return self._traverse_tree(x,node.right)
+    
+    def predict_proba(self, X):
+        """Returns class probabilities for each sample in X."""
+        probs = []
+        for x in X:
+            probs.append(self._traverse_tree_proba(x, self.root))
+        return np.array(probs)
+
+    def _traverse_tree_proba(self, x, node):
+        if node.is_leaf_node():
+            probabilities = np.zeros(len(self.classes_))
+            if node.counts:
+                total = sum(node.counts.values())
+                for i, c in enumerate(self.classes_):
+                    probabilities[i] = node.counts.get(c, 0) / total if total > 0 else 0
+            return probabilities
+
+        if x[node.feature] <= node.threshold:
+            return self._traverse_tree_proba(x, node.left)
+        return self._traverse_tree_proba(x, node.right)

@@ -95,6 +95,13 @@ class KMeans(cluster):
             ax.scatter(*point, marker="x", color="black", linewidth=2)
 
         plt.show()
+    
+    def transform(self, X):
+        # transform samples to their closest centroids
+        distances = np.zeros((X.shape[0], self.K))
+        for i, sample in enumerate(X):
+            distances[i] = [euclidean_distance(sample, centroid) for centroid in self.centroids]
+        return distances
 
 # Testing
 if __name__ == "__main__":
@@ -104,12 +111,11 @@ if __name__ == "__main__":
     X, y = make_blobs(
         centers=3, n_samples=500, n_features=2, shuffle=True, random_state=40
     )
-    print(X.shape)
 
     clusters = len(np.unique(y))
-    print(clusters)
 
     k = KMeans(K=clusters, max_iters=150)
     y_pred = k.predict(X)
     k.accuracy(y_pred)
-    # k.plot()
+    X_new = k.transform(X)
+    print('Distance of every instance from each centroid:\n',X_new)

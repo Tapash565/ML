@@ -4,13 +4,14 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.base import BaseEstimator, ClassifierMixin
 from classifiers import classifier
+from sklearn.preprocessing import LabelEncoder
 
 class LogisticRegression(classifier, BaseEstimator, ClassifierMixin):
-    def __init__(self,lr = 0.01, n_iters = 100,lamda = 0,alpha = 0):
+    def __init__(self,lr = 0.01, n_iters = 100,l1_ratio = 0,alpha = 0):
         self.lr = lr
         self.n_iters = n_iters
         self.weights = None
-        self.lamda = lamda
+        self.l1_ratio = l1_ratio
         self.alpha = alpha
 
     def sigmoid(self,z):
