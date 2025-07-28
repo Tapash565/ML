@@ -2,10 +2,6 @@
 
 This repository contains all the fundamental concepts of machine learning implemented using simple libraries.
 
-## 🚀 Features
-
-- List your main features
-- Describe what makes your project useful or unique
 
 
 
